@@ -1,0 +1,7 @@
+ManifestFileVersion: 0
+CRC: 2957577885
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: compass.bundle
+      Dependencies: {}
