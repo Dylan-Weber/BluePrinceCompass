@@ -16,7 +16,8 @@ namespace BluePrinceCompass
         private const String PreferencesCategoryName = "BluePrinceCompass";
         private MelonPreferences_Category _category;
 
-        public MelonPreferences_Entry<Vector2> _compassPosition;
+        public MelonPreferences_Entry<float> _compassPositionX;
+        public MelonPreferences_Entry<float> _compassPositionY;
         public MelonPreferences_Entry<float> _compassScale;
         public MelonPreferences_Entry<bool> _invertCompassRotation;
         
@@ -28,7 +29,7 @@ namespace BluePrinceCompass
         private const string HudGameObjectPath = "__SYSTEM/HUD";
         private const string CullingReferenceRelativePath = "Steps/Steps Icon";
         private const string PlayerGameObjectPath = "__SYSTEM/FPS Home/FPSController - Prince";
-        private const string CompassBundlePathSuffix = @"BluePrinceCompass\assets\compass.bundle";
+        private const string CompassBundlePathSuffix = "BluePrinceCompass/assets/compass.bundle";
         private const string CompassPrefabName = "Compass Mod HUD";
         private const string CompassNeedleName = "Compass Needle";
 
@@ -40,13 +41,18 @@ namespace BluePrinceCompass
             LoggerInstance.Msg("Initialized Blue Prince Compass Mod.");
         }
 
-        // Initializes the preferences for the compass mod, including position, scale, and rotation inversion.
+        // Initializes the preferences for the compass mod, including position, scale, and
+        // rotation inversion.
         private void InitPreferences()
         {
             _category = MelonPreferences.CreateCategory(PreferencesCategoryName);
-            _compassPosition = MelonPreferences.CreateEntry<Vector2>(PreferencesCategoryName, "CompassPosition", new Vector2(0.0f, -986.0f), "The xy position of the compass relative to the HUD GameObject.");
-            _compassScale = MelonPreferences.CreateEntry<float>(PreferencesCategoryName, "CompassScale", 1.0f, "The size of the compass relative to its default size.");
-            _invertCompassRotation = MelonPreferences.CreateEntry<bool>(PreferencesCategoryName, "InvertCompassRotation", false, "If enabled, the compass will rotate in the opposite direction.");
+
+            _compassPositionX = MelonPreferences.CreateEntry<float>(PreferencesCategoryName, "CompassPositionX", 0.0f, null, "The x position of the compass relative to the HUD GameObject.");
+            _compassPositionY = MelonPreferences.CreateEntry<float>(PreferencesCategoryName, "CompassPositionY", -986.0f, null, "The y position of the compass relative to the HUD GameObject.");
+            _compassScale = MelonPreferences.CreateEntry<float>(PreferencesCategoryName, "CompassScale", 1.0f, null, "The size of the compass relative to its default size.");
+            _invertCompassRotation = MelonPreferences.CreateEntry<bool>(PreferencesCategoryName, "InvertCompassRotation", false, null, "If enabled, the compass will rotate in the opposite direction.");
+            LoggerInstance.Msg($"Compass Preferences: {Path.Combine(MelonEnvironment.UserDataDirectory, $"{PreferencesCategoryName}.cfg")}");
+            _category.SetFilePath(Path.Combine(MelonEnvironment.UserDataDirectory, $"{PreferencesCategoryName}.cfg")); 
         }
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)
@@ -76,7 +82,8 @@ namespace BluePrinceCompass
             return player.transform;
         }
 
-        // Retrieves the culling reference GameObject from the HUD GameObject using the specified relative path.
+        // Retrieves the culling reference GameObject from the HUD GameObject using the
+        // specified relative path.
         private GameObject GetCullingReference(GameObject hud)
         {
             Transform cullingReference = hud.transform.Find(CullingReferenceRelativePath);
@@ -88,7 +95,8 @@ namespace BluePrinceCompass
             return cullingReference.gameObject;
         }
 
-        // Initializes the compass by loading the prefab from the asset bundle, instantiating it, and setting it up for culling.
+        // Initializes the compass by loading the prefab from the asset bundle, instantiating
+        // it, and setting it up for culling.
         private GameObject InitCompass(GameObject hud)
         {
             GameObject compassObject = LoadPrefab(hud);
@@ -105,6 +113,7 @@ namespace BluePrinceCompass
             return compassObject;
         }
 
+        // Retrieves the compass needle Transform from the compass GameObject.
         private Transform GetCompassNeedle(GameObject compassObject)
         {
             if (compassObject == null)
@@ -119,7 +128,9 @@ namespace BluePrinceCompass
             }
             return needle;
         }
-        // Loads the compass prefab from the asset bundle and instantiates it at the specified position and scale.
+        
+        // Loads the compass prefab from the asset bundle and instantiates it at the specified
+        // position and scale.
         private GameObject LoadPrefab(GameObject hud)
         {
             string bundlePath = Path.Combine(MelonEnvironment.ModsDirectory, CompassBundlePathSuffix);
@@ -138,7 +149,7 @@ namespace BluePrinceCompass
                 return null;
             }
 
-            Vector3 compassPosition = new Vector3(_compassPosition.Value.x, _compassPosition.Value.y, CompassZPosition);
+            Vector3 compassPosition = new Vector3(_compassPositionX.Value, _compassPositionY.Value, CompassZPosition);
             GameObject compassObject = GameObject.Instantiate(prefab, compassPosition, Quaternion.identity, hud.transform);
             compassObject.transform.localScale = new Vector3(_compassScale.Value, _compassScale.Value, 1);
 
@@ -146,7 +157,8 @@ namespace BluePrinceCompass
             return compassObject;
         }
 
-        // Sets up compass culling so it will only be rendered when steps, gems and keys are rendered.
+        // Sets up compass culling so it will only be rendered when steps, gems and keys are
+        // rendered.
         private void InitCulling(GameObject obj, GameObject hud)
         {
             Il2Cpp.Culler hudCuller = hud.GetComponent<Il2Cpp.Culler>();
@@ -206,7 +218,8 @@ namespace BluePrinceCompass
                 return;
             }
             // I'm not sure how the HUD objects get enabled after the opening cutscene, so I
-            // just enable the compass if the culling reference is active or if there is no culling reference.
+            // just enable the compass if the culling reference is active or if there is no
+            // culling reference.
             _compassObject.SetActive(_cullingReference == null || _cullingReference.activeInHierarchy);
             AlignCompass();
         }
