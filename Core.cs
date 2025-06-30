@@ -231,9 +231,7 @@ namespace BluePrinceCompass
             {
                 return;
             }
-            Vector3 fpsForward = _playerTransform.forward;
-            Vector3 compassHeading = new Vector3(fpsForward.x, fpsForward.z, 0).normalized;
-            float compassAngle = Vector3.SignedAngle(compassHeading, Vector3.up, Vector3.forward);
+            float compassAngle = _playerTransform.eulerAngles.y;
             if (_invertCompassRotation.Value)
             {
                 compassAngle = -compassAngle;
