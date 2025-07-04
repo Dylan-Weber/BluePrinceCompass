@@ -13,7 +13,7 @@ namespace BluePrinceCompass
     public class Core : MelonMod
     {
 
-        private const String PreferencesCategoryName = "BluePrinceCompass";
+        private const string PreferencesCategoryName = "BluePrinceCompass";
         private MelonPreferences_Category _category;
 
         public MelonPreferences_Entry<float> _compassPositionX;
